@@ -1,0 +1,1761 @@
+%% Rapport de TER: Developpement d une Interface Homme Machine de 
+%% decouverte semi-automatique des Open Data 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Jules Liber
+%% Pierre De Wulf
+%% Anna Moulucou
+%% Wladimir du Manoir
+%%
+%% Groupe 3.2
+%% Master 1 informatique IHM
+%% Universite Paul Sabatier
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Version 01
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Preambule
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[french]{article}
+%TODO 
+% commenter
+% indenter
+% regler images
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc} %latin9
+\usepackage{listings}
+\usepackage{color} % colors options 
+\usepackage{textcomp} 
+\usepackage{graphicx} % to display the images  
+\usepackage{endnotes} % to make the asterics sweet 
+\usepackage[hyphens]{url} % for all url link and mail 
+\PassOptionsToPackage{hyphens}{url}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{ {./img/} } % for the graphic include cherche in this file
+\usepackage{caption} % for the caption of the pictures
+\usepackage{subcaption} % for the sub images
+\usepackage{comment} % pour les commentaires
+\makeatletter
+
+
+% Very usefull for the url: 
+\expandafter\def\expandafter\UrlBreaks\expandafter{\UrlBreaks%  save the current one
+  \do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j%
+  \do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t%
+  \do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D%
+  \do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N%
+  \do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X%
+  \do\Y\do\Z\do\*\do\-\do\~\do\'\do\"\do\-\do\0}%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Special footnote code from the package 'stblftnt.sty'
+%% Author: Robin Fairbairns -- Last revised Dec 13 1996
+\let\SF@@footnote\footnote
+\def\footnote{\ifx\protect\@typeset@protect
+    \expandafter\SF@@footnote
+  \else
+    \expandafter\SF@gobble@opt
+  \fi
+}
+\expandafter\def\csname SF@gobble@opt \endcsname{\@ifnextchar[%]
+  \SF@gobble@twobracket
+  \@gobble
+}
+\edef\SF@gobble@opt{\noexpand\protect
+  \expandafter\noexpand\csname SF@gobble@opt \endcsname}
+\def\SF@gobble@twobracket[#1]#2{}
+\let\footnote=\endnote
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{babel}
+
+\usepackage{listings}\usepackage{babel}
+
+\addto\extrasfrench{%
+   \providecommand{\og}{\leavevmode\flqq~}%
+   \providecommand{\fg}{\ifdim\lastskip>\z@\unskip\fi~\frqq}%
+}
+
+\usepackage{babel}
+
+\addto\extrasfrench{%
+   \providecommand{\og}{\leavevmode\flqq~}%
+   \providecommand{\fg}{\ifdim\lastskip>\z@\unskip\fi~\frqq}%
+}
+
+
+   
+\makeatother
+
+\usepackage{babel}
+\makeatletter
+\addto\extrasfrench{%
+   \providecommand{\og}{\leavevmode\flqq~}%
+   \providecommand{\fg}{\ifdim\lastskip>\z@\unskip\fi~\frqq}%
+}
+% Supposed to put the footnote not in superscript (don't work)
+    \makeatletter
+    \renewcommand\@makefntext[1]{%
+      \noindent\makebox[0pt][r]{\@thefnmark.\space}#1}
+    \makeatother
+\makeatother
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Travail encadré de recherche: \\
+SUJET}
+
+\author{Jules Liber}
+\author{Pierre De Wulf}
+\author{Anna Moulucou}
+\author{Wladimir du Manoir}
+
+
+
+\maketitle
+Laboratoire d'accueil: l'Institut de Recherche en Informatique de
+Toulouse
+
+
+\author{Sous la direction de: Mr. Alain Berro, Imen Megdiche}
+
+Rapport sur le stage effectué du 20 novembre au ? avril 2014
+\begin{figure}
+\begin{subfigure}[bl]{0.5\textwidth}
+%   \includegraphics[width=\textwidth]{IRIT} %image 
+\end{subfigure}
+\begin{subfigure}[br]{0.5\textwidth}
+ %\caption{A picture of a gull.}
+   %\includegraphics[width=\textwidth] {UPS}
+\end{subfigure}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\cleardoublepage{}
+
+
+\part*{Remerciements}
+
+  Tout d'abord, il apparaît opportun de commencer ce rapport de stage
+  par des remerciements, je remercie tous les membres du jury d’être présents à ma soutenance et d'avoir lu ce rapport de stage. Je remercie ceux qui m'ont permis 
+  de satisfaire ma curiosité
+  et m'ont permis d'avancer dans mon projet professionnel en me proposant
+  un sujet que j'ai pu mener à bien.
+
+  Je remercie Mr. Alain Berro, mon maître de stage qui m'a formé et accompagné
+  tout au long de cette expérience professionnelle et m'a donné énormément
+  de choix et de responsabilité. Le fait que je puisse, grâce à lui
+  m'installer, à la Manufacture de Tabac (Université Toulouse 1) lors
+  de mes 15 derniers jours de TER%
+    \footnote{
+      Travail Encadré de Recherche 
+      (nous prenons la liberté typographique maintenant tolérée d'écrire
+      les abréviations sans les points: TER)
+    }m'a vraiment aidé à trouver un rythme dans mon travail.
+
+  Je remercie Imen Megdiche, qui m'a suivi tout au long de mon projet
+  et qui était toujours prête à me venir en aide en cas de difficultés
+  avec beaucoup de patience et de pédagogie.
+
+  Je remercie Mr. Tarek Ababsa de m'avoir consacré du temps et pour sa patience pour m'expliquer le sujet de sa publication à venir.
+
+  Enfin, je remercie l'ensemble des personnes présentes dans l'espace
+  informatique de l'IRIT%
+    \footnote{
+      l'Institut de Recherche en Informatique de Toulouse (IRIT)
+    }à Toulouse 1 Capitole qui m'ont accueillies les 15 derniers jours
+  de mon TER de deux mois.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\cleardoublepage{}
+
+%table of content
+\tableofcontents{}
+
+\cleardoublepage{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\global\long\def\thesection{\roman{section}}
+
+\global\long\def\thesubsection{\thesection.\arabic{subsection}}
+
+\part*{Introduction}
+
+%A corriger de ici 1 sur 6
+Cette introduction porte sur un ensemble d'aspects, notamment reliés au CMI (Cursus Master Ingénierie). On y verra la présentation du stage où je dresse une esquisse du contexte et les thématiques abordées, puis quelques principes de déroulement lors du stage. On verra aussi l'organisation de l'IRIT, où nous aborderons les différentes thématiques de cet institut et quelques profils de chercheurs qui m'ont intéressés. Enfin je donnerai les raisons de mon choix de ce TER, le rôle que j'ai eu et ce que j'ai retiré de cette expérience. 
+%Jusque la
+
+\section{Présentation du stage }
+
+  Du 14 avril 2014 au 9 juin 2014, j'ai effectué un TER (Travail Encadré
+  de Recherche) au sein de l'IRIT (l'Institut de Recherche en Informatique
+  de Toulouse) située au sein de l'Université de Paul Sabatier. Au cours
+  de ce TER j'ai pu m'intéresser à la représentation en graphes des
+  structures des données provenant d'Open Data%
+    \footnote{
+      Les Open Data (traduction littérale: Les données ouvertes) sont des
+      données numériques en grande partie d'origine publique, produites par
+      des collectivités ou des services publics. Ces données ont la particularité
+      d'avoir une licence libre (libre accès, droit de réutilisation par
+      tous, sans restriction technique, juridique ou financière).
+      
+       On utilisera
+      au long de ce rapport la désignation la plus utilisée dans la presse
+      qui est un angélisme.
+      
+       Citations du site d'e-juristes: (\url{http://www.e-juristes.org/lopen-data/})
+
+      \og Si l\textquoteright{}expression anglophone « open data » est
+      parfois traduite par le terme « données ouvertes » en français, il
+      n\textquoteright{}existe pas une définition juridique claire et limpide
+      de ladite donnée ouverte. Par ailleurs et avant tout développement,
+      à ce jour, il est à noter que la loi Toubon et sa Commission générale
+      de terminologie et néologie n\textquoteright{}ont pas officiellement
+      traduit l\textquoteright{}anglicisme open data. Il conviendra donc
+      d\textquoteright{}utiliser le terme open data non traduit. \fg{}%
+    }.
+
+  Les Open Data (les données ouvertes) sont des données numériques en
+  grande partie d'origine publique, produite par des collectivités ou
+  des services publics. Ces données ont la particularité d'avoir une
+  licence libre. 
+
+  Mon rôle a consisté essentiellement en la création d'une interface
+  en Java Swing%
+    \footnote{
+      Définition de Swing Java: 
+
+      \og Swing est une bibliothèque graphique pour le langage de programmation
+      Java, faisant partie du package Java Foundation Classes (JFC), inclus
+      dans J2SE. Swing constitue l'une des principales évolutions apportées
+      par Java 2 par rapport aux versions antérieures. \fg{}%
+      
+      Source:
+       \url{http://fr.wikipedia.org/wiki/Swing\_\%28Java\%29}
+    }, de la représentation et la modification de la structure de différents
+  types de données provenant des Open Data. 
+
+  C'était l'opportunité pour moi d'appréhender l'IHM%
+    \footnote{
+      Interaction Homme Machine: Ensemble des dispositifs matériels et
+      logiciels donnant à l'utilisateur la possibilité de communiquer avec
+      un ou plusieurs dispositifs informatiques. 
+
+      Source: \url{https://www.lri.fr/~mbl/pdf/mbl-encycl-06a.pdf}%
+    } (Interaction Homme Machine) avec Java Swing, ainsi que la théorie
+  des graphes, le pattern design%
+    \footnote{
+      Le Pattern Design (aussi appelé quelque fois le patron de conception) est une structure de module dans le domaine informatique pour répondre
+      à des besoin précis de conception. Ces architectures ont été pour
+      la plupart à force d\textquoteright{}expérimentation.
+      
+       Dans la quasi-totalité
+      de la littérature informatique on parle de \og Pattern Design \fg{}
+      et non de patron de conception j'utiliserai donc ce terme. Des discussions
+      sont encore en cours sur l'utilisation officielle du terme: 
+
+      \url{http://fr.wikipedia.org/wiki/Discussion:Patron_de_conception}%
+
+
+      \url{http://stackoverflow.com/questions/110987/pros-and-cons-of-localisation-of-technical-words}%
+    } MVC (Modèle Vue Contrôleur)%
+    \footnote{
+      Le pattern design Model View Controller (en abrégé MVC, de l'anglais
+      model-view-controller) est une architecture de programme informatique
+      permettant de séparer semantiquement les différents modules entre trois
+      grands groupes:
+      \begin{description}
+      \item [{Le~Modèle}] contenant toutes les données et leurs structures (seule
+      entité amenant à dialoguer avec la base de données)
+      \item [{La~Vue}] contenant tout les éléments graphiques (seule entité amenant
+      à dialoguer avec l'utilisateur)
+      \item [{Le~Contrôler}] permettant le dialogue entre la Vue et le Modèle
+      (la Vue peut interagir avec le modèle mais uniquement en lecture) 
+      \end{description}
+      %\includegraphics{mvc}
+
+      Source du schéma:
+
+      \url{http://www.liafa.univ-paris-diderot.fr/~carton/Enseignement/InterfacesGraphiques/MasterInfo/Cours/Swing/mvc.html}
+
+      Pour plus d'informations voir cette page: 
+      
+      \url{http://fr.openclassrooms.com/informatique/cours/apprenez-a-programmer-en-java/mieux-structurer-son-code-le-pattern-mvc}%
+    }, le logiciel Intellj%
+    \footnote{
+      Intellj IDEA est un environnement de développement (IDE Integrated
+      Development Environment) pour Java %
+    } et Git%
+  \footnote{
+    \og Git est un logiciel de gestion de versions décentralisées. C'est
+    un logiciel libre créé par Linus Torvalds, créateur du noyau Linux,
+    et distribué selon les termes de la licence publique générale GNU
+    version 2. \fg{}
+
+    Source: \url{http://fr.wikipedia.org/wiki/Git}%
+  }, ainsi que le langage \LaTeX{}%
+  \footnote{
+    \og \LaTeX{} {[}...{]} est un langage et un système de composition
+    de documents créé par Leslie Lamport en 1983. Plus exactement, il
+    s'agit d'une collection de macro-commandes destinées à faciliter l'utilisation
+    du « processeur de texte » \TeX{} de Donald Knuth. \fg{}
+
+    Source: \url{http://fr.wikipedia.org/wiki/LaTeX}%
+  }.
+
+  Au-delà d'enrichir mes connaissances en Java Swing, ainsi que le pattern
+  design MVC ce TER m'a permis de conforter mon choix dans mon futur
+  parcours professionnel.
+
+
+\section{Déroulement du stage }
+
+  Mr. Alain Berro, Imen Megdiche, et moi-même avions déterminé
+  les objectifs primordiaux et les lignes directives de mon travail
+  lors de la première réunion. La première semaine ma mission était de
+  choisir entre: soit le développement d'une interface grâce à l'utilisation
+  d'une bibliothèque me permettant la représentation des graphes, soit
+  de programmer l\textquoteright{}interface à partir des composants
+  swing. La deuxième semaine, j'ai réalisé la conception de l\textquoteright{}interface.
+  Les semaines suivantes ont été consacrées à l'implémentation et le débogage
+  de l'interface. Enfin la dernière semaine de ce TER a été consacré
+  à l'écriture de ce rapport. 
+
+  Nous nous donnions rendez-vous tous les vendredis au sein de l'IRIT,
+  pour échanger sur l'avancement et régler les problèmes que nous avions
+  du mal à régler à distance. Imen Megdiche restait joignable en permanence au
+  cas où je rencontrais des difficultés. 
+
+  J'ai, en grande partie, travaillé chez moi et un peu à la bibliothèque.
+  Les 15 derniers jours, j'ai travaillé au sein de la manufacture des
+  tabacs (Université Toulouse 1 IRIT). 
+
+
+\section{Le cadre de la Recherche }
+
+  l'Institut de Recherche en Informatique de Toulouse (L'IRIT) a été
+  fondé en 1990. Il est en partenariat avec l'Université Paul-Sabatier
+  de Toulouse (UT3), le CNRS (Centre national de la Recherche Scientifique),
+  l'Institut national polytechnique de Toulouse (ENSEEIHT) et l\textquoteright{}Université
+  Toulouse 1 Capitole (UT1). Il est le plus grand institut de recherche
+  en informatique en France. Son évaluation est de A+ par l'AERES en
+    2010%
+    \footnote{
+      Source: www.aeres-evaluation.fr/content/download/14181/233424/file/EVAL-0311384L-S2110043199-UR-RAPPORT.pdf%
+    }. Il regroupe plus de 700 membres (permanents et non-permanents)
+  divisé en 7 thèmes principaux:
+    \begin{description}
+      \item [{thème~1:}] Analyse et synthèse de l\textquoteright{}information
+      (4 équipes: SAMoVA, SC, TCI et VORTEX) 
+      \item [{thème~2:}] Indexation et recherche d\textquoteright{}informations
+      (2 équipes: PYRAMIDE et SIG) 
+      \item [{thème~3:}] Interaction, Coopération, Adaptation paR l\textquoteright{}Expérimentation
+      (ICARE) (2 équipes: IC3, ELIPSE et SMAC) 
+      \item [{thème~4:}] Raisonnement et décision (3 équipes: LILaC et ADRIA)
+      \item [{thème~5:}] Modélisation, algorithmes et calcul haute performance
+      (1 équipe: APO) 
+      \item [{thème~6:}] Architecture, systèmes et réseaux (5 équipes: IRT,
+      SEPIA, SIERA, T2RS et TRACES) 
+      \item [{thème~7:}] Sûreté de développement du logiciel et certification
+      (3 équipes: ACADIE, ICS et MACAO)
+    \end{description}
+  En 2006 l'équipe VORTEX (Visual Objects from Reality To Expression)
+  a été créée. Elle répond à une demande des membres des équipes SIRV
+  et VPCAB lors du comité d\textquoteright{}évaluation de l\textquoteright{}IRIT.
+  On retrouve dans les thématiques de cette équipe l\textquoteright{}informatique
+  graphique, de la vision par ordinateur, de l\textquoteright{}intelligence
+  artificielle et des réseaux. La problématique de ces équipes se focalise
+  sur 3 axes: l'acquisition, la création et la visualisation.
+
+    Mon TER se déroulait au département d'analyse et synthèse de l\textquoteright{}information
+    dans l\textquoteright{}équipe VORTEX (Visual Objects: from Reality
+    To EXpression).
+
+  Mr. Alain Berro,mon maître de stage, de l'équipe de VORTEX, étant maître de conférence, j'ai
+  pu percevoir le métier d'enseignant chercheur et en particulier l'aspect
+  recherche. 
+
+  %Bonus: {[}temps consacré a l'enseignement/recherche de financements/publications{]} 
+
+  %Bonus: {[}l'organisation de l’équipe VORTEX{]}
+
+  Imen Megdiche réalise sa thèse sur: "Entreposage intelligent
+  d'Open Data" avec comme directeur de thèse
+  Mr. Olivier Teste et codirecteur Mr. Alain Berro. Cette thèse est financée grâce à une bourse ministérielle de l'enseignement et de la recherche. 
+
+  %Bonus: Les trois plus grandes activités réalisées par l'IRIT
+  %Bonus: IHM ?
+
+  \subsection{Quelques Profils de Chercheurs:}
+
+  %Bonus: Souligner mon interèt pour l'IHM
+  Dans cette section, je vais présenter quelques profils de chercheurs qui m'ont intéressé dans leurs parcours et leurs démarche scientifique. C'est grâce à eux que j'ai pu avoir une vision toute autre de l'informatique. Ces chercheurs travaillent dans les domaines: structures robotiques, de l'intelligence artificielle. 
+
+    \subsubsection{L'émergence des structures robotiques}
+
+            
+      Mr. Tarek Ababsa a eu un bac en sciences exactes puis à fait un parcours d'ingénieur informatique industriel pendant 5 ans à l'Université de Biskra.  Il a obtenu un magistère (concours national) d'intelligence artificielle. Enseignant à l’université de Biskra, il a obtenu une bourse de 18 mois par le Ministère de l'Enseignement Supérieure d'Algérie. Mr. Tarek Ababsa finalise sa thèse sur l\textquoteright{}émergence des structures robotiques. 
+
+      Dans le cadre de ma recherche de projet professionnel, Mr. Tarek Ababsa m'a présenté son dernier document \og Splittable Metamorphic
+      Carrier Robots \fg{}%
+        \footnote{
+          Référence de l'article disponible ici: 
+          
+           \url{http://www.irit.fr/-Publications-?code=8664\&nom=Ababsa\%20Tarek}%
+        } qu'il a réalisé avec Nouredinne Djedi, Yves Duthen et Sylvain Cussat-Blanc. 
+      
+		\begin{figure}[h]
+      	\centering
+      	%\includegraphics[scale=0.5]{TAREK}
+   		\caption{Exemple d'application de l'étude de Mr. Tarek Ababsa}
+      	\end{figure}
+
+       L'article présente des algorithmes sur les composants auto-organisés.
+      Inspiré des mécanismes biologiques, nous cherchons à comprendre comment
+      un robot composé d'éléments (nommés atome robotique) qui sont autonomes
+      d'un point de vue énergétique, décisionnel et opérationnel, peut se
+      réorganiser pour mieux s'adapter à son environnement ou à effectuer
+      une tâche précise. Grâce aux heuristiques (algorithmes génétiques) %Bonus: \footnote{ genetique}
+      nous résolvons des systèmes complexes, alors surgit un phénomène émergent. %Bonus: \footnote{ emergent}.
+       L'étude porte sur des robots modulaires/métamorphiques%
+        \footnote{\og 
+          Un robot métamorphique est un robot constitué d\textquoteright{}un
+          grand nombre d\textquoteright{}unités autonomes qui peuvent se réorganiser
+          en une structure (morphologie) mieux adaptée à un environnement ou
+          à une tâche spécifiée. Ces unités sont des modules mécatroniques très
+          élémentaires, où chaque module peut s\textquoteright{}attacher, se
+          détacher et échanger de l\textquoteright{}information et/ou de l\textquoteright{}énergie
+          avec les modules qui lui sont adjacents. \fg{}
+
+          Source: \url{http://www.ut-capitole.fr/universite/composantes/faculte-d-informatique/seminaire-irit-ut1-tarek-ababsa-353076.kjsp}%
+        } sur l'analyse de système hormonal. %Bonus: Demeande a Mr. Tarek Ababsa \footnote{}
+         Pour illustrer cet ensemble de concepts nous prendrons un exemple: Nous
+      avons des entités de robots modulaires (ici un carré de couleur rouge)
+      qui communiquent entre eux, ils ont un objectif: ramasser un objet (carré
+      en bleu clair). Le but n'est pas défini en terme d'action mais exprimé
+      en terme de concept, c'est selon les réactions des différentes entités
+      que nous pourrions obtenir l'objectif final, nous appelons cela le phénomène
+      émergent. Ainsi si nous changeons la disposition des obstacles (en bleu
+      foncé) les robots réussiront à atteindre l\textquoteright{}objet.
+      Pour atteindre leurs buts, ils perçoivent la concentration d'une certaine substance. Comme si les carrés bleus diffusaient une certaine substance
+      chimique et que plus nous nous rapprocherions de la cible, plus la substance
+      se concentrait. L'orientation de déplacement et la direction peut être défini par le taux de concentration de la substance.
+      La prise de décision est basée  sur un
+      ensemble de critères. Un ensemble d'éléments est prises en conte, pour une réponse, pondéré et subtile. Cette prise de décision est basée sur une analyse
+      de système hormonal (analogie au fonctionnement animal). Ainsi, c'est selon un certain nombre de critères
+      et un ensemble de seuils que les décisions sont prises.
+
+      \subsubsection{L'intelligence artificielle}
+
+     %A corriger de ici 2 sur 6
+      Mr. Filipo Studzinski Perotto, originaire du Brésil, a un doctorat en Intelligence Artificielle et a travaillé depuis en temps qu'ingénieur, notamment à l'ADRIA et au INF. %et c'est quoi ?
+      Ses thématiques principales tournent notamment autour de: les systèmes multi-agents, l'apprentissage automatique, l’intelligence constructive. 
+      J'ai eu la chance d'assister à un séminaire qu'il a présenté. 
+      Son objectif est de résoudre des problèmes complexes / réels avec des agents à perception limitée et action limitée. La phase sur laquelle il s’intéresse est l'apprentissage de ses agents. Plus spécifiquement que l'agent puisse apprendre à anticiper, à trouver des régularités, et à rentrer dans l’environnement d'autres agents. C'est par le théorème constructiviste que Mr. Filipo Studzinski Perotto essaie de répondre à ses problématiques. 
+
+      Je parlerai dans cette section uniquement d'une petite partie de son séminaire. C'est par le processus de décision Markoviens\footnote{
+          "Le modèle Markovien de base correspond à un simple graphe d'états, doté d'une fonction de transition probabiliste. A 
+          chaque pas de temps, le modèle subit une transition qui va potentiellement modifier son état. Cette transition permet 
+          donc au système modélisé d'évoluer, selon une loi connue par avance. Néanmoins, cette loi de transition est probabiliste.
+          En effet, l'évolution du système peut être incertaine, ou simplement mal connue. Cette fonction probabiliste permet 
+          donc d'exprimer simplement la loi d'évolution du modèle, sous la forme d'une matrice de probabilités. Cela ouvre donc 
+          la porte à un très grand nombre d'utilisations où l'évolution d'un système n'est connue qu'à travers des statistiques."
+
+          Source:\url{http://laurent.jeanpierre1.free.fr/recherche/markov.html}
+        }, en se basant sur le modèle des réseaux Bayésiens\footnote{
+          "Un réseau bayésien définit la loi conjointe d'un ensemble de variables 
+          aléatoires. En général, la loi conjointe est restreinte dans une structure 
+          d'indépendance conditionnelle particulière qui est décrite par un graphe 
+          acyclique orienté construit à l'aide de distributions locales."
+
+          Source: \url{http://w3.jouy.inra.fr/unites/miaj/public/matrisq/Contacts/abari.07_03_12.expo2.pdf}
+        }
+      que Mr. Filipo Studzinski Perotto fonde ses observations.
+
+      L'agent considère à tout moment qu'il n'a pas accès à tous les paramètres, que certaines hypothèses sont cachées. On parle ici de FPOMDP (partially observable Markov decision process). Prenons un exemple pour illustrer la démarche. Disons que nous avons p->d p->c et q->p. L'agent remet en cause ses croyances en fonction des résultats qu'il observe. Si à chaque fois qu'il obtient d le postulat q a été vérifié, il pourra hésiter et penser qu'il existe un paramètre auquel il n'a pas accès et qui serait de la forme: q->p'->d. C'est ainsi que petit à petit l'agent construit un comportement en adéquation à son environnement.
+
+      %Bonus Mr. Filipo Studzinski Perotto a crée un programme pour illustrer ses experimentations// 
+
+      Grâce à cette méthode il a réussi à répondre à un problème de ce type:
+
+		\begin{figure}[h]
+      	\centering
+      	%\includegraphics[scale=0.6]{FLIP}
+   		\caption{Exemple d'application de l'étude.}
+      	\end{figure}
+      
+
+
+       Nous avons ici un système où l'agent à trois choix:
+       \begin{description}
+          \item [{U:}] ne pas bouger
+          \item [{R:}] aller à droite
+          \item [{L:}] aller à gauche
+       \end{description}
+       Les paramètres cachés sont les paramètres: 
+       \begin{description}
+          \item [{0:}] ne pas changer d'état
+          \item [{1:}] changer d'état
+       \end{description}
+       
+       Sans ses paramètres cachés la construction du graphe n'est pas faisable l'action U serait indéterminée par l'agent. C'est seulement en considérant les paramètres non visibles que la résolution peut se faire. 
+       % }
+       %jusqu'ici
+
+
+\section{Mon implication, mon rôle}
+
+
+  Dans cette section, je vais présenter dans la section \ref{sec_motivation}  mes motivations personnelles, dans la section \ref{sec_implication} mon rôle. 
+
+\subsection{Motivations Personnelles }\label{sec_motivation}
+
+%Bonus: Logiciel accessible -> importance du brevet dans le monde de la recherche{]}
+
+J'ai commencé par chercher un stage dans une entreprise car je voulais
+voir le fonctionnement en entreprise. Mais ma priorité était de trouver
+un stage en entreprise ou un TER qui soit en relation avec mon projet professionnel, c'est-à-dire
+en IHM. J'ai trouvé plusieurs stages en entreprise mais aucun ne concernait directement l'IHM. 
+% stage trop court 
+% plus de dévelopement en Java 
+Je consultais fréquemment le site proposant les différents TER pour
+être sûr de ne pas passer à coté d'un sujet qui pouvait me plaire.
+Dés que j'ai vu le sujet de ce TER "Développement
+d'une Interface Homme Machine de découverte semi-automatique des Open
+Data", je me suis lancé. Plusieurs choses m'ont particulièrement enthousiasmé.
+
+Bien sûr déjà le fait que le stage concerne l' IHM.
+Lors de mon parcours j'ai fait des études en sociologie (1er et 2eme
+année de licence). La relation directe entre l'informatique et la sociologie
+me plaît, pouvoir contribuer à un outil qui pourrait venir en
+aide à mes confrères sociologues m'enchantait. Un des autres
+aspects qui me réjouissait tout particulièrement, est de pouvoir participer
+à un projet accessible à tous et ainsi faire valoir et mettre en pratique
+mes convictions profondes sur la philosophie du libre. % !!!! question oblige!
+
+Je me sens redevable envers tous les programmes et les tutoriels que
+j'ai pu consulter et j'aimerais participer à ce mouvement collectif
+et prometteur. Pouvoir rétribuer et prendre part à mon tour après avoir
+consommé les outils développés par les communautés me motivait. 
+
+\subsection{Mon rôle}\label{sec_implication}
+
+Lors de l'entretien, du premier contact, pour savoir si j'allais réaliser
+mon TER avec Mr. Alain Berro et Imen Megdiche, ils m'ont proposé
+de créer une IHM pour l'exploitation des Open Data. 
+
+Lors de la première réunion, on m'a donné le choix entre deux sujets différents à réaliser:
+\begin{description}
+\item [{Sujet~1~:}] Améliorer la détection spatio-temorelle des Open Data brutes et le fonctionnement des algorithmes de transformation des Open Data en graphe.
+\item [{Sujet~2~:}] Réaliser une interface d'intégration de Open Data en graphes provenant de plusieurs sources.
+\end{description}
+
+Mon choix s'est reposé sur le sujet 2, qui me paraissait plus complexe et ambitieux mais surtout plus enrichissant vis à vis
+de la représentation des graphes et de la structure des types de données.
+Connaissant Java seulement depuis peu de temps, j'avais certaines appréhensions sur l'intégration des graphes en Java Swing (qui à mauvaise réputation)\footnote{
+Java Swing a mauvaise réputation:
+\url{http://java.dzone.com/articles/10-things-i-never-want-do}
+}, mais aussi sur la théorie des graphes.
+
+Mon rôle consistait à développer une IHM qui met en œuvre l'étape 2 du processus d'entreposage d'Open Data se déroulant ainsi: 
+
+\begin{description}
+\item [{Étape~1~:}] Transformation des Open Data brutes en graphes enrichis 
+\item [{Étape~2~:}] Intégration holistique 
+\item [{Étape~3~:}] Définition des schémas multidimensionnels à partir des graphes intégrés 
+\item [{Étape~4~:}] Génération de l'entrepôt de données 
+\end{description}
+
+Le chapitre suivant contient plus de détails concernant ces étapes. 
+
+\section{Annonce de plan }
+
+  Pour rendre compte de l'interface que j'ai réalisé, nous commencerons
+  par la mettre  dans son contexte, ainsi nous allons passer en revue les différentes
+  phases d'analyse des données des Open Data. On verra ainsi (I) Cadre global: Intégration des graphes d'Open Data. Où nous verrons la démarche complète d'analyse
+  et de traitement des Open Data. Puis nous verrons (II) la conception
+  de l'interface et les lignes directrices que j'ai essayé de respecter.
+  On verra la mise en place d'un pattern design: MVC ainsi que les
+  règles respectées d'ergonomie pour la création de l'interface.
+  Nous finirons par voir (III) les étapes implémentations au cours du
+  temps où j'expose les choix que j'ai fait et les problèmes que j'ai
+  rencontré ainsi que leurs résolutions. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Developpement d une Interface Homme Machine de decouverte 
+%% 	semi-automatique des Open Data
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cleardoublepage{}
+\setcounter{section}{0} 
+\global\long\def\thesection{\arabic{section}}
+ \global\long\def\thesubsection{\thesection.\alph{subsection}}
+
+\part*{Développement d'une Interface Homme Machine de découverte semi-automatique
+des Open Data}
+
+\addcontentsline{toc}{part}{Développement d'une Interface Homme Machine
+de découverte semi-automatique des Open Data}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Section 1 
+\section{Cadre global: Intégration des graphes d'Open Data }\label{part_Open_Data}
+
+Mon sujet de stage concerne l'intégration des graphes d'Open Data. Ceci rentre dans le cadre de la thèse de Imen Megdiche intitulé: "Entreposage d'Open Data" et encadré par Mr. Alain Berro (VORTEX) et Mr. Olivier Teste (SIG).  
+Les Open Data provenant de fichiers plats
+ \footnote{
+  "Les fichiers plats contiennent, généralement, un seul enregistrement par ligne. Il y a différentes conventions pour 
+  représenter les données. Les formats CSV et DSV permettent de séparer les champ à l'aide d'un séparateur comme la 
+  virgule ou la tabulation. Dans d'autres cas, chaque champs peut avoir une longueur fixe; les valeurs "courtes" 
+  seront complétées avec des espaces. Afin d'éviter des conflits de séparateurs il peut être nécessaire d'ajouter 
+  d'autres techniques de formatage."
+
+  Source: \url{
+  http://fr.wikipedia.org/wiki/Base_de_donn\%C3\%A9es_orient\%C3\%A9e_texte
+  }
+}(Excel, csv..) ayant subit une première transformation en graphes (étape 1 de la thèse) forment l'entrée de mon 
+ travail. L'objectif est d'intégrer ces Open Data dans une seule structure en graphes, dans le but de fournir en 
+ sortie une vision globale homogène des différents graphes fournis en entrée. 
+
+\subsection{Le contexte général d'usage des Open Data}
+
+Les Open Data ont connu une émergence en Europe depuis quelques années. C'est un mouvement qui a commencé au États 
+Unis depuis l'adoption de la loi sur le libre accès à l'information en 1966. Et qui devient depuis quelques années un 
+mouvement international. En l'occurrence, pour la France cela a commencé en 2002\footnote{
+Décret n° 2002-1064 du 7 août 2002 relatif au service public de la diffusion du droit par l'internet:
+  \url{http://www.legifrance.gouv.fr/affichTexte.do?cidTexte=JORFTEXT000000413818&dateTexte=&categorieLien=id
+  }%
+ }.
+On trouve de plus en plus de producteurs de ces données qui sont dans la plupart des organismes gouvernementaux tels 
+que les ministères, les instituts nationaux. La fiabilité de leurs sources les rendent particulièrement intéressantes. 
+Ils couvrent plusieurs domaines tel que: l'économie, l'emploi, le logement, le développement durable, la santé, le 
+social, le transport, la culture, etc.. On constate de plus en plus de ré-utilisateurs de ces données que ce soit en 
+recherche ou en industrie. Je cite par exemple le leader européen  DataPUblica qui a fait de son métier les Open 
+Data, avec un portail permettant le partage, la réutilisation et la visualisation des données. Dans le même esprit nous
+trouvons Socrata\footnote{
+Socrata est une companie qui offre un service de consultation des données sociales provenant de données gouvernementales.
+
+Source:\url{http://www.socrata.com/}
+}  qui est une entreprise anglaise qui a développé une plate-forme pour le management, partage et 
+réutilisation des Open Data. Dans le contexte d'intégration de ces données, nous trouvons l'ETL Talend\footnote{ Talend est un logiciel en open source qui permet l'intégration, le management, de grande nombre de données dans le domaine de l'entreprise.
+
+Source: \url{http://en.wikipedia.org/wiki/Talend}
+} qui adapte sa 
+solution pour l'intégration de différents types d'Open Data mais qui souffre de plusieurs limites pour les formats de 
+fichiers plats.  
+
+\subsection{Les problèmes d'intégration des Open Data}
+
+
+Malgré le grand intérêt de l’émergence, des Open Data, celles-ci présentent plusieurs difficultés concernant leur intégration dans 
+les systèmes d'informations. En effet, ces données présentent une hétérogénéité sémantique  c'est-à-dire que nous trouvons du 
+vocabulaire ou des nomenclatures non-communes entre les différentes sources. Ce qui pose une grande difficulté si nous voulons les mettre en commun (intégration). En outre, ces données présentent aussi une hétérogénié structurelle c'est-à-dire,que nous trouvons des niveaux de détails différents entre les sources. Par exemple dans une source nous trouvons des 
+statistiques sur les faits de délinquances par mois et par département et dans une autre source nous trouvons les mêmes 
+types de statistiques par année et par région. Ce qui complique d'avantage le croisement des données. Par ailleurs, 
+ces données sont dispersées sur plusieurs producteurs (plusieurs portails à l'échelle nationale ou internationale) ce qui engendre des disparités de formats. Enfin ces données ont souvent des problèmes de qualité (données manquantes, erronées...). 
+
+\subsection{Intégration des données dans la littérature}
+
+Dans la littérature, l'intégration des données est un problème de recherche qui date des années 1970. Il y a deux types d'approches existantes:  (1) l'intégration incrémentale, (2) intégration holistique. 
+
+Dans le premier type d'intégration plusieurs travaux ont été proposés, le plus abouti est COMA++ qui permet d'intégrer deux sources (XML, ontologie..) et qui a été entendu pour faire de l'intégration incrémentale de plusieurs sources. Mais ceci  a deux  inconvénients: (i) le processus est lent et consomme plusieurs ressources humaines, (ii) il n'y a pas de certitude sur l'optimalité de la solution fournie, puisque plusieurs scénarios d'intégration sont envisageables. 
+
+ Le deuxième type d'intégration  est holistique, c'est-à-dire, que nous traitons toutes les sources de données en même temps dans l'objectif de trouver une solution optimale globale et de palier aux problèmes du premier type d'intégration.  PORSCHE est une solution proposée dans ce sens qui permet de générer des schémas intégrés à partir de schémas XML. 
+
+\subsection{Proposition d'intégration des Open Data}
+
+Afin de résoudre une partie des problèmes cités ci-dessus des Open Data. Imen Megdiche a proposé un processus d'entreposage en quatre étapes: (1) transformation des Open data brutes en graphes, (2)  intégration holistique des différents graphes, (3) définition d'un schéma multidimensionnel à partir des graphes intégrés, (4) génération des scripts d'alimentation de l’entrepôt de données. 
+
+Mon sujet de stage se situe au niveau de la phase 2 du processus. Je prends en entrée des Open Data dans le format GraphML (un format de fichier XML pur les graphes).  Ces graphes contiennent des données structurelles, des données non structurelles et des annotations issues de la phase 1. Ce qui m'intéresse pour l'intégration, ce sont les données structurelles.
+L'intégration consiste à prendre plusieurs données structurelles provenant de plusieurs sources, les rassembler dans le même graphe et proposer à l'utilisateur des opérations permettant la fusion des structures. On fait appel à  des distances sémantiques entre les concepts pour proposer les structures les plus similaires (distance de JAccard\footnote {
+"L'indice et la distance de Jaccard sont deux métriques utilisées en statistiques pour comparer la similarité et la diversité entre des échantillons. Elles sont nommées d'après le botaniste suisse Paul Jaccard."
+
+Source:\url{en.wikipedia.org/wiki/Jaccard_index}
+}et de WUP\footnote {
+Pour le WUP (Zhibiao
+Wu et Martha
+Palmer) l'article de référence est:
+\url{
+http://delivery.acm.org/10.1145/990000/981751/p133-wu.pdf?ip=141.115.70.83&id=981751&acc=OPEN&key=7EBF6E77E86B478F.DD49F42520D8214D.4D4702B0C3E38B35.6D218144511F3437&CFID=470809842&CFTOKEN=51558936&__acm__=1401789585_d95d7dd27bf3d0fcab9f76f936e6b73b
+}
+
+Vous pouvez aussi trouver l'article sur:
+\url{http://dl.acm.org/citation.cfm?id=981751}
+}). Nous répondons ainsi au problème d'hétérogénéité sémantique.     
+
+
+%\cleardoublepage{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Section 2 
+
+\section{Conception de l'interface}\label{part_Conception}
+Dans cette partie nous verrons, la structure globale de l'interface, pour mieux comprendre comment sont intégrés les différents modules. On examinera ensuite les avantages et inconvénients du pattern design MVC, adapter pour les interfaces graphiques. Enfin nous donnerons un aperçu, du respect des règles d'or de Shneiderman, appliqué à l'interface.
+
+
+  \subsection{Présentation de la structure }
+  La structure globale de l'interface se divise en trois parties: le Modèle, la Vue et le Contrôleur.
+
+
+  \subsubsection{Modèle (data)}
+
+    Dans le modèle, deux types de données sont représentés le graphe en
+    cours d'utilisation et les paramètres.
+
+    Le graphe en cours d'utilisation est représenté sous forme de listes
+    de graphes de la plus ancienne à la plus récente. Cette implémentation
+    n'est certainement pas la plus efficace mais a été la plus facile
+    à mettre en place et ne gène pas l'utilisation de l'interface pour
+    des graphes raisonnables. Grâce à l'architecture MVC, l'implémentation
+    est facilement remplaçable par une structure plus adéquate (tel que
+    UndoManager).
+
+    Les paramètres représentent l'ensemble des préférences de visualisation,
+    et de valeurs par défaut que l'utilisateur a pu choisir. Tel que
+    l'affichage de certaines fenêtres de vérifications, le chargement
+    par défaut d'un fichier, la langue utilisée...
+
+
+  \subsubsection{Vue (gui)}
+
+    Dans la Vue (Graphical user interface), les paquets sont séparés en
+    fonction de leurs natures: les panels de la fenêtre principale, les
+    fenêtres,les images, les interfaces dédiées aux listeners.
+
+    Nous avons aussi les paquets spécifiques tels que un paquet
+    concernant les langues utilisables et deux paquets consacrés à la représentation des graphes. Tous les messages passés à l'utilisateur sont
+    regroupés dans une classe pour que le changement de langue soit plus
+    aisé. Deux paquets sont consacrés à la visualisation des graphes l'un
+    utilisant les fonctionnalités de base d'affichage de Jung (laissé
+    pour le débogage), l'autre utilisant la bibliothèque de Netbeans (Visual
+    Library).
+\nopagebreak
+     %A corriger de ici 3 sur 6
+    \begin{figure}[h!]
+      	\centering
+         %\includegraphics[width=\textwidth]{uml_data}
+         
+      \caption{On peut voir ici tous les attributs de la classe Settings et de la classe CurrentGraph qui font partie du paquet data}
+    \end{figure}
+\nopagebreak    
+    \begin{figure}[h!]
+    \centering
+      %\includegraphics[width=\textwidth]{uml_contoleur}
+      \caption{Voici le paquet contrôleur, la classe principale étant le MainFrame. OpenGraphML est une classe créé pour ouvrir les fichiers GraphML. La classe GraphmlFilter est utile pour filtrer les fichiers, seuls les fichiers avec l’extension .graphml sont acceptés. Les classes node et edge représentent les attributs respectivement des nœuds et des liens. Les classes EdgesFactory et VectexFactory gèrent les règles de générations des nouveaux nœuds et liens }
+    \end{figure}
+\nopagebreak
+    \begin{figure}[h!]
+      %\includegraphics[width=\textwidth]{uml_gui}
+      \caption{Ici nous avons le paquet gui (graphic user interface) toute la partie graphique est traitée ici. Les paquets langages et images ont des attributs statiques. La classe énumérative Actions représente toutes les actions que l'utilisateur peut réaliser. Le paquet panels regroupe les différents éléments graphiques de la fenêtre principale, le paquet frames regroupe toutes les fenêtres auxiliaires de l'interface. Les paquet graphVisual et graphDisplay créent la scène pour représenter les graphes. graphVisual est spécifique à la bibliothèque Jung et graphDisplay à la bibliothèque de Netbeans. On remarque que la classe MainFrame n'est reliée que par des Interfaces propre à la structure MVC }
+    \end{figure}
+    %Jusque la
+\pagebreak
+  \subsubsection*{Les panels de la fenêtre principale}
+	
+	\begin{figure}[h!]
+     	\centering
+    	%\includegraphics[width=\textwidth]{PanelsMainFrame}
+    	\caption{Panel de la fenêtre principale}
+	\end{figure}
+
+    \paragraph{GraphPanel}
+
+      Panel principal de visualisation des graphes
+
+
+    \paragraph{MenuBarGraph}
+
+      JMenuBar où nous pouvons effectuer toutes les actions du programme dans
+      les graphes aux menus suivants: File Edit Graph View et Help.
+
+
+    \paragraph{ToolBarGraph}
+
+	%\includegraphics{Toolbar}
+	
+      Pour plus d'ergonomie, j'ai créé une barre pour les actions suivantes:
+       Merge, AddNode, AddEdge, DeleteEdge, DeleteNode, EditColor, EditMode,
+      ShowEdges.
+      
+
+        
+
+
+	\subparagraph{ Merge (fusionner) \\} 
+	
+	%\includegraphics{merge}
+      Cette fonction permet de fusionner les nœuds des graphes sélectionnés.
+
+
+    \subparagraph{AddNode (Ajouter un nœud) \\}
+
+	%\includegraphics{addnode}
+      Rajoute un nœud au graphe
+
+
+    \subparagraph{AddEdge (Ajouter une liaison) \\}
+
+	%\includegraphics{addedge}
+      Rajoute une liaison au graphe
+
+
+    \subparagraph{DeleteEdge (Supprimer une liaison) \\}
+
+	%\includegraphics{deleteedge}
+      Supprime une liaison du graphe
+
+
+    \subparagraph{DeleteNode (Supprimer un nœud) \\}
+
+	%\includegraphics{deletenode}
+      Supprime un nœud du graphe
+
+
+    \subparagraph{EditColor (Édition de Couleur) \\} (fonction en cours de réalisation)
+
+	%\includegraphics{editcolor}
+      Permet de modifier les couleurs du graphe
+
+
+    \subparagraph{EditMode (Édition du Mode) \\} (fonction en cours de réalisation)
+
+	%\includegraphics{editGraph}
+      Permet de mettre le graphe en mode édition où les noms des nœuds et
+      des liaisons sont modifiables.
+
+
+    \subparagraph{ShowEdges (Montrez les liaisons) \\} (fonction en cours de réalisation)
+
+	%\includegraphics{showedge}
+	%\includegraphics{showedgehover}
+	%\includegraphics{notshowedge}
+      Permet d'afficher les liaisons (%\includegraphics{showedge}) ou de les afficher uniquement lorsque
+      nous passons au dessus (%\includegraphics{showedgehover}) ou ne pas les afficher du tout (%\includegraphics{notshowedge}).
+
+
+    \subparagraph{ShowSimilarity (Montrez les Similarités) \\} (fonction en cours de réalisation)
+
+      Permet d'afficher le taux de similarité entre des nœuds.
+
+
+  \subsubsection*{Les Fenêtres}
+
+
+    \paragraph{AddEdgesFrame \\ \\}
+
+    %\includegraphics{AddEdge}
+    
+   
+    \paragraph{AddNodeFrame \\ \\}
+
+    %\includegraphics{AddNode}
+
+
+    \paragraph{DeleteNodeFrame \\ \\}
+
+    %\includegraphics{DeleteNode}
+
+
+    \paragraph{MergeFrame \\  \\}
+
+    %\includegraphics{Merge}
+
+
+    \paragraph{MergeNoSelectedFrame \\  \\}
+    
+    \nopagebreak
+    
+    %\includegraphics{mergeNode}
+
+
+    \paragraph{Settings \\} (en cours de réalisation)
+
+
+  \subsubsection*{Les images }
+
+    Les images ont été réalisées avec Adobe Photoshop%
+    \footnote{\og Adobe Photoshop est un logiciel de retouche, de traitement et
+    de dessin assisté par ordinateur édité par Adobe. \fg{}
+
+    Source: \url{http://fr.wikipedia.org/wiki/Adobe\_Photoshop}%
+    }.
+
+
+  \subsubsection*{Les interfaces dédiés aux listeners}
+
+    Pour garder une structure MVC et pour assurer une plus grande flexibilité
+    dans l'optique de réutilisation ou d'amélioration, nous utilisons des
+    classes abstraites pour établir la relation, entre les classes de
+    la vue et celles du contrôleur.
+
+
+    \paragraph{ActionsGraphListener}
+
+      La classe MainFrame passe par l'implémentation de l'interface ActionsGraphListener,
+      pour les différentes actions que l'utilisateur peut réaliser. Pour être
+      sûr de garder une bonne cohérence, nous ne considérons pas la provenance
+      de l'action mais seulement sa nature.
+
+
+    \paragraph{UsersAllowedActions}
+
+      La classe MainFrame interagit grâce à UsersAllowedActions pour remettre
+      à jour les actions réalisables par l'utilisateur. Ici un tableau de
+      booléen désignant les actions indique si l'action est autorisée par
+      l'utilisateur ou non. De nouveau la nature de l'action est considérée
+      pour permettre une plus grande flexibilité dans l'optique d'une future
+      amélioration.
+
+
+    \paragraph*{Exemple d'utilisation des Interfaces}
+
+      Prenons pour exemple l'interface ActionsGraphListener. La classe <<Actions
+      >> est une classe Enum répertoriant toutes les actions possibles réalisées
+      par l'utilisateur.
+
+    \definecolor{lgray}{RGB}{245,245,245}
+
+
+    \subparagraph{L'interface ActionsGraphListener}
+
+      \begin{lstlisting}[backgroundcolor={\color{lgray}},language=Java]
+      public interface ActionsGraphListener {
+          public void ActionEmitted(Actions actions); 
+      }
+      \end{lstlisting}
+
+
+
+    \subparagraph{Contrôleur}
+
+      Voici le code pour un élément dans le contrôleur:
+
+      \begin{lstlisting}[backgroundcolor={\color{lgray}},language=Java]
+      private MenuBarGraph menubar;
+      \end{lstlisting}
+
+
+      \begin{lstlisting}[backgroundcolor={\color{lgray}},breaklines=true,language=Java,tabsize=5]
+      menubar.setActionsGraphListener
+      	(new ActionsGraphListener() {
+          @Override             
+      	public void ActionEmitted(Actions actions) {
+                      AllActions(actions);
+                  }
+              });
+      \end{lstlisting}
+
+
+      \begin{lstlisting}[backgroundcolor={\color{lgray}},language=Java]
+      private void AllActions (Actions actions){
+              switch (actions){
+                  case OPEN:                 
+      			openFile();                 
+      			break;             
+      			[...]               
+      			break;             
+      			case EXIT:                 
+      			dispose();                 
+      			}
+      }
+      \end{lstlisting}
+
+
+
+    \subparagraph*{Vue}
+
+      Voici le code pour un élément dans la vue (dans MenuBarGraph):
+
+      \begin{lstlisting}[backgroundcolor={\color{lgray}},language=Java]
+      private ActionsGraphListener actionsGraphListener;
+      \end{lstlisting}
+
+
+      \begin{lstlisting}[backgroundcolor={\color{lgray}},breaklines=true,language=Java]
+      openItem.addActionListener(new AbstractAction() { 
+          @Override             
+      	public void actionPerformed(ActionEvent e) {     
+           if (actionsGraphListener != null) { 
+      //  On envoie l action en question au controleur
+           actionsGraphListener.ActionEmitted(Actions.OPEN);   
+           }     
+             }      
+        });
+      \end{lstlisting}
+      
+On peut donc voir ici la séparation entre les différents modules et qui sont uniquement relier par une interface (classe abstraite) pour facilité les modifications.
+
+
+  \subsubsection*{Visualisation des graphes avec JUNG}
+
+	%\includegraphics{Jung}
+
+  \subsubsection*{Visualisation avec la Visual Library de Netbeans}
+	
+	%\includegraphics{GraphViewerToolbar}
+
+  \subsubsection{Contrôleur}
+
+    Le contrôleur est le lien entre la vue et le modèle:
+
+    La classe principale de cet ensemble est la MainFrame. Nous verrons
+    les principales méthodes.
+\paragraph{CreateVisualGraphFromFile}
+Cette méthode crée la scène de visualisation du le graphe.
+
+    \paragraph{reloadGraphDisplay (rechargement de la Visualisation du Graphe)}
+    Selon un boolean (showVV)nous rechargeons dans le GraphPanel la scene créée par la Visual Library de Netbeans ou le VisualizationViewer créée par Jung.
+
+    \paragraph{getGraphFromFile (récupérer le graphe du fichier)}
+	Récupère l'ensemble des informations contenues dans le fichier dont le chemin lui est passé en paramètre. Ces informations sont stockées dans le CurrentGraph du paquet data.
+	\paragraph{Les méthodes pour les différentes actions} 
+	Pour chaque action que l'utilisateur peut faire une méthode est implémentée dans le contrôleur.
+
+
+  \subsection{Pattern Design: MVC}
+
+    Le grand avantage de la structure Modèle Vue Contrôleur est l'indépendance
+    des classes, ce qui donne lieu à une grande ré-utilisabilité, une
+    facilité lors de la maintenance et du débogage.
+
+
+  \subsubsection{Réutilisation }
+
+    % // FORME: la générisité c'est la possibité d'utiliser des objets 
+    % du type non déterminé à l'implémentation  désigné souvent par <T>
+    % appliqué à l'application
+
+
+    Pour rendre le code réutilisable et modulable, une des meilleures façons
+    est de penser de manière plus abstraite. Ainsi nous favorisons l'utilisation
+    de classes abstraites et d'interfaces. La réutilisation du code devient
+    alors possible, car la dépendance entre les classes est minime.
+
+    La structure MVC nous aide à séparer les différentes classes selon
+    leurs fonctions et nous force ainsi à séparer le code selon ses
+    fonctionnalités pour les rendre plus abstraites. On réussi à se rapprocher
+    grâce à l'architecture MVC, de l'élémentarité de la fonction, sa fonction la plus rudimentaire,
+    de chaque classe, ainsi l'abstraction et le code devient plus modulaire.
+
+    Grâce à cette structure nous pouvons reprendre l'intégralité d'un des modules
+    (modèle, vue, contrôleur) pour un autre projet.
+
+
+  \subsubsection{Maintenance / Amélioration}
+
+    La modularité du code nous permet de modifier seulement certains aspects
+    précis du code, sans devoir tout modifier. L'indépendance des classes
+    nous permet de réécrire une classe entière avec plus de facilité,
+    sans que cela nous oblige à réécrire d'autres classes.
+
+    L'architecture MVC nous permet de changer un module entier que
+    se soit le modèle, la vue (ou le contrôleur) la séparation du code
+    nous facilite le travail. Cette séparation sémantique des modules
+    en modèle, vue et contrôleur, nous donne accès à un découpage qui
+    permet facilement le remplacement entier de l'un de ses modules. Par
+    exemple, ce qui arrive le plus fréquemment, si nous souhaitons designer
+    l'intégralité de l'aspect visuelle de l'interface, cette architecture rend cette tache
+    plus aisée.
+
+
+  \subsubsection{Déboguer}
+
+    La séparation propre à la structure MVC, nous permet de cibler,
+    lors d'un bug, d'où peut provenir le problème. Si nous sommes confronté
+    à un bug graphique, nous savons que le problème
+    résideque dans la partie vue. Le débogage se fait ainsi plus rapidement.
+
+
+  \subsubsection{Inconvénients}
+
+    Toutes structures à ses désavantages, celle de la MVC est surtout
+    sur l'efficacité, les appels de fonctions par exemple sont plus fréquentes
+    car nous passons par des interfaces.
+
+    Pour des personnes non familières à la structure MVC l'approche
+    du code parait plus complexe.
+
+    Le nombre de fichiers augmente drastiquement ce qui peut être gênant
+    dans certains cas.
+  \subsubsection{Conclusion}
+  Vue les nombreux avantages que nous offre ce pattern design  et sa compatibilité avec Java swing je l'ai appliqué à l'architecture de mon projet. 
+  \subsection{User-Friendly: Les 8 règles d'or de Shneiderman}
+
+    En IHM le diable se cache dans les détails, la frontière entre
+    une interface agréable et confortable à utiliser et une interface incompréhensible
+    est fine.
+
+
+  \subsubsection{Fluidités des actions}
+
+    Pour chaque action réalisée par l'utilisateur, j'ai cherché à garder
+    une certaine cohérence, une fluidité. Pour certaines actions, le problème
+    que j'ai rencontré était la possibilité de donner l'utilisateur le choix d'un
+    certain nombre de critères. Par exemple pour ajouter un nœud, était-il
+    plus pratique de donner un nom par défaut ou de donner à l'utilisateur le choix 
+    du nom du nœud nouvellement créé ? Pour être sûr de pouvoir satisfaire
+    pleinement l'utilisateur, je lui ai laissé le choix (modification
+    possible dans la fenêtre "Settings")
+
+
+  \subsubsection{Tout public}
+
+    Pour permettre un plus grand panel d'utilisateurs, certaines options
+    sont focalisées sur les experts tels que les raccourcis clavier, certains
+    paramètres, pour les novices au programme les "tips". Ces derniers sont présents
+    au survol de la souris. Ces détails permettent une meilleure compréhension
+    de l'interface et ainsi un meilleur rapport avec l'utilisateur. J'ai
+    aussi créé une barre d'outils pour permettre une plus grande rapidité
+    dans l'exécution des taches les plus fréquentes.
+
+
+  \subsubsection{Feedback}
+
+    Pour chaque action que l'utilisateur réalise, une information est donnée
+    dans la barre info en bas de l'interface.
+
+    Le changement de couleurs permet une meilleure visualisation du graphe.
+
+
+  \subsubsection{Entités des actions}
+
+    Chaque action commence par une demande de l'utilisateur, puis si l'action le demande il
+    y a certain nombre de critères que l'utilisateur choisi et,nous finissons par l'accomplissement
+    de l'action et la confirmation que  l'action s'est bien déroulée dans le panel d'info. On
+    respecte bien la structure conseillée par Shneiderman avec un début, un déroulement puis une finalité de l'action, avec un retour (feedback) à l'utilisateur lui indiquant que l'action est bien finie.
+
+
+  \subsubsection{Traitements des erreurs}
+
+    Les erreurs doivent être traitées un maximum en amont, l'utilisateur doit le moins possible avoir la possibilité de provoquer une erreur. Les erreurs que l'utilisateur peut déclencher sont:
+    \begin{description}
+      \item [{Fichiers: }] lorsque l'utilisateur ouvre un fichier, si le fichier n'existe pas ou n'a pas le bon format une JOptionPane s'ouvre en indiquant la nature de l'exception. Le message d'erreur pourrait être plus clair avec des messages spécifiques pour chaque exception. Si l'utilisateur est non anglophone et en particulier si cet utilisateur n'est pas dans le domaine informatique le message peut être incompréhensible. Malheureusement ne connaissant pas toutes les erreurs qui pourraient survenir, le traitement intégral parait difficile. J'ai donc préféré garder la nature de l'exception en sachant que les utilisateurs seraient dans le domaine informatique.
+      \item [{La~saisie: }] un message d'erreur affiche si l'utilisateur entre un nom de nœud ou de lien trop long/ trop court/ ou avec des caractères spéciaux, dans une version ultérieure, ces erreurs seront traitées en amont. L'utilisateur ne pourra pas cliquer sur "ok" sans que ces conditions soit respectées. 
+    \end{description}
+
+
+  \subsubsection{Possibilité de retour en arrière}
+
+    La possibilité de retourner en arrière me paraissait pas essentielle lors de la conception, mais dès les premières utilisations, je me suis rendu compte que cette option était primordiale. Pour plus de simplicité et pour une mise en place rapide de cette option, je n'ai pas utilisé de classe spécifique mais j'ai dupliqué à chaques étapes le graphe. Dans une version ultérieure, j'utiliserais certainement la classe: UndoManager. 
+
+  \subsubsection{Sentiment
+  de contrôle et d'appropriation de l'utilisateur}
+
+    Pour que l'utilisateur se sente à l'aise dans l'utilisation de l'interface il est important de lui donner l'impression qu'il n'est pas contraint. La fenêtre "Settings" permet de régler toute une panoplie de propriétés sans omettre les fonctions par défaut. Ainsi l'utilisateur gagne du temps en donnant les paramètres qu'il souhaite, En particulier les noms des nœuds et des liens. (Cette fenêtre n'est pas implémentée graphiquement mais toutes les options sont déjà implémentées.) J'ai prévu l'enregistrement des données en mémoire pour que les paramètres que l'utilisateur a choisi se retrouvent à la réouverture de l'interface.
+
+  \subsubsection{la mémoire de l'utilisateur }
+
+    Un des conseils que donne Shneiderman, est de considérer que l'utilisateur n'a pas de mémoire du tout. Dans mon interface, l'utilisateur peut faire défiler (scroller) mais aussi zoomer le panel du graphe, ainsi lorsqu'il voudra faire une action sur le graphe il pourra avoir une vison globale du graphe, mais il pourra aussi visualiser une partie spécifique du graphe. Une autre application de cette règle est lorsque un utilisateur veut créer un lien, il peut choisir un nœud dans le  défilement des nœuds du graphe (JComboBox).
+
+ % \cleardoublepage{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Section 3  
+%% [!] entrée plus en détail dans la partie conception 
+%% sinon ce serai de la répétition 
+%%TO CORRECT
+\section{Réalisation de l'interface}\label{part_Realisation}
+
+Dans cette partie nous verrons les principales étapes de la réalisation de l'interface. En commençant par la prise en main, où nous avons défini le travail à faire et posé les bases. Puis nous verrons la conception visuelle où nous avons créé l'aspect visuel de l'interface. Enfin nous traiterons les différentes étapes de l'implémentation où je relate les difficultés rencontrées et leurs résolutions. 
+
+	\subsection{Prise en main}
+
+  La prise en main est un moment clé dans un projet, c'est à cette étape que nous posons les fondements de notre travail.
+  
+\begin{comment}
+more on: 
+http://get-software.net/macros/latex/contrib/comment/comment.pdf
+		\subsubsection{Rencontre avec les étudiants de Master}
+
+			En discutant avec le groupe constitué de Guillaume Gurfinkiel,
+			Yohann Houpert et Daniel Parise, ils m'ont expliqué 
+			le travail qu'ils avaient réalisés. Leur projet en relation avec la thèse 
+      d'Imen Megdiche, était une UE liée à la création de projet. Par conséquent la 
+      partie documentation était particulièrement importante. Pendant 
+      l'année de master, ils n'ont pas pu se consacrer entièrement à ce 
+      projet sur une période de temps donnée, du à d'autres projets et devoirs 
+      qu'ils avaient en parallèle. Ils n' ont pu que travailler 
+		  d'une façon discontinue, concentrer tous leurs efforts 
+      
+			pour obtenir un code construit et cohérent. Ils ont choisis BitBucket
+				\footnote{
+  				
+  				Serveur utilisant le logiciel Git pour créer un partage de projet 
+  				accessible uniquement avec un mot de passe.
+
+          site: \url{https://bitbucket.org/}
+				}pour partager les projets. Outils qu'ils ont appris à utiliser lors
+      du projet. Ils m'ont aussi dit que la cohésion du groupe et l'établissement 
+      d'une communication régulière étaient essentielle. Le travail a été 
+      séparé en rôles bien déterminés. L'un s'occupait de l'interface graphique,
+      un autre des algorithmes de traitements et le dernier de la documentation 
+      et le débogage des modules lorsque les autres membres de l'équipe avaient
+      des problèmes.
+
+      Dans la démarche de la thèse d'Imen Megdiche, ils implémentaient 
+      ou ils mettaient en place les différents algorithmes d’analyses qu'Imen Megdiche
+      avait conçu pour analyser les fichiers Excel. Ainsi le chargement du 
+      fichier, et son analyse est synthétisé dans un document XML. Grâce à 
+      l’interface graphique l'utilisateur peut déterminer si l’analyse du 
+      document à correctement été analysé%//
+      d'un point de vue sémantique.
+\end{comment}
+		\subsubsection{Mise en place des outils et de la stratégie de travail}
+
+      Nous avons défini les lignes directrices et les points cruciaux
+      de l'interface à réaliser. Nous avons aussi décidé des différents
+      logiciels et des moyens de communication que nous allions utiliser.
+
+      La fonction principale du logiciel est de pouvoir, à partir d'un fichier
+      XML,  définir un graphe représentant la structure des données,
+      pour que l'utilisateur puisse sélectionner des nœuds et les fusionner. 
+      Le graphe final est alors sauvegardé dans un autre fichier XML.
+
+			Nous avons choisi comme outils de communication le module de Google 
+			Hangout 
+				\footnote{
+  				Plate-forme de messagerie instantanée et de visioconférence 
+  				développée par Google.
+				} qui est pratique. Lors de problèmes plus conséquents ou urgents 
+			nous utilisons le téléphone. Pour les transferts de fichier Imen Megdiche a 
+			une préférence pour Dropbox
+				\footnote{
+  				Dropbox est un service de stockage et de partage de copies de 
+  				fichiers locaux en ligne proposé par Dropbox, Incorporation.
+  				
+  				Source: \url{http://fr.wikipedia.org/wiki/Dropbox}
+				}.
+      On utilise les mails lorsque le contact 
+			instantané n'est pas nécessaire.
+
+		\subsubsection{Recherche des bibliothèques les plus adéquates}
+
+    			J'ai commencé par rechercher les bibliothèques de représentations de
+     graphes les plus connues, les 2 les plus utilisées sont JUNG et JGraph
+       \footnote{
+         JGraph est un logiciel d'open source représentation des graphes écrits en Java
+         initié par Gaudenz Alder pendant son projet universitaire en 2000 à ETH de Zurich.
+       }.
+     Pour les graphes que je voulais représenter les bibliothèques de JUNG et JgraphT 
+     ont des fonctionnalités équivalentes. Jung a une meilleure documentation
+     et plus de tutoriels sont disponibles que pour la bibliothèque JGraph. Un des autres
+     avantages de Jung est la possibilité de générer un graphe directement d'un
+     fichier XML en un format appelé GraphML.
+ 
+			
+		\subsubsection{Les possibilités de la bibliothèque JUNG}
+
+			Cette bibliothèque est très complète, j'ai commencé par me familiariser
+			avec cette bibliothèque avec un tutoriel
+        \footnote{
+          Tutoriels sur l'utilisation de Jung avec les GraphML:
+
+          \url{http://www.game2learn.com/?p=282}
+
+          Ainsi que d'autress démos:
+
+          \url{http://jung.sourceforge.net/applet/index.html}
+
+        }. Au départ j'ai juste cherché, à comprendre plus en profondeur les 
+      classes principales de ce framework, sans commencer à réaliser l'interface:
+   %A corriger 4 sur 6
+   
+     Les classes pour les graphes: DirectedGraph et UndirectedGraph dont
+     les principales méthodes sont:
+
+
+       Ajout et suppression des nœuds et liens:
+
+        addVertex(v): ajoute le nœud v au graphe
+
+        addEdge(e): ajoute le lien e au graphe
+
+        removeVertex(v): enlève le nœud v du graphe
+
+        removeAllVertices(): enlève tous les nœuds du graphe
+
+        removeEdge(e): enlève le lien e du graphe
+
+        removeAllEdges(): enlève tous les nœuds du graphe
+
+      Récupère des informations sur le graphe:
+
+        getVertices(): renvoie tous les nœuds du graphe
+
+        getEdges(): renvoie tous les liens du graphe
+
+        numVertices(): renvoie le nombre de nœuds
+
+        numEdges(): renvoie le nombre de liens 
+
+        copy(): copie en profondeur le graphe
+
+      Pour les nœuds:
+
+        getGraph(): retourne la référence du graphe qui contient ce nœud
+
+        getNeighbors(): retourne les nœuds connectés à ce nœud
+
+        getIncidentEdges(): retourne les liens incidents à ce nœud
+
+        degree(): retourne le degré d'incidence
+
+        getEquivalentVertex(g): retourne s'il existe, dans le graphe g le nœud équivalent à ce nœud
+
+        isNeighbor(v): retourne vrai si le nœud est voisin à v
+
+        isIncident(e): retourne vrai si le lien est incident à e
+
+        removeAllIncidentEdges(): retourne tout les liens incident à ce nœud
+
+        copy(g): crée une copie de ce nœud dans le graphe
+
+      Pour les liens:
+
+        getGraph(): retourne la référence du graphe contenant ce lien
+
+        getIncidentVertices(): retourne l'ensemble des nœuds incidents à ce lien
+
+        getEquivalentEdge(g): retourne s'il existe, dans le graphe g le lien équivalent à ce lien
+
+        numVertices(): retourne le nombre de lien qui sont incidents à ce lien
+
+        isIncident(v): retourne vrai si le lien est incident au nœud v
+
+        copy(g): crée une copie du lien dans le graphe g\\
+        
+        
+
+      %jusqu'ici
+     %[traduction du site http://jung.sourceforge.net/doc/manual.html#gve]
+
+     Jung rend l'utilisation des graphes très facile. Notre but était d'avoir
+     des graphes directs (et non des multi-graphes) donc la structure devait être
+     implémentée en DirectGraph.
+     La notion de hiérarchie dans la représentation de la structure était primordiale.
+     Jung s'y prête parfaitement car nous pouvons vraiment désigner les parents d'un
+     nœud ainsi que ses fils.
+
+ \begin{figure}[h!]
+     	\centering
+     	\caption{}
+    	%\includegraphics{Jung}
+    \end{figure}
+
+
+
+     Graphiquement, cette bibliothèque propose une interface intéressante
+     mais très minimaliste: l’interaction avec l'utilisateur  allait être complexe
+     à mettre en place. Une autre aspect était la représentation des graphes qui 
+     posait des problèmes. Par exemple, si les noms des nœuds
+     étaient trop longs, ils finissaient par se chevaucher:
+
+ 	\begin{figure}[h!]
+     	\centering
+     	\caption{}
+    	%\includegraphics{JungBug}
+    \end{figure}
+
+
+
+     J'ai donc cherché s'il existait des moyens de construire les graphes visuellement
+     avec un rendu propre.
+
+		\subsubsection{Les possibilités de Visual Library de Netbeans}
+
+      Cette bibliothèque est basée sur la notion de widget, qui ont plusieurs couches
+      pour la représentation graphique. Coupler cette possibilité de représentation
+      avec les algorithmes et les avantages que permet la bibliothèque Jung
+      me paressait une très bonne solution.
+      Lors de mes recherches, je suis tombé sur une bibliothèque créé par
+      Tim Boudreau qui a mis en place toute une série de modules pour faciliter
+      la création graphique avec les graphes. Une vidéo (en anglais) qui
+      présente les possibilités de ces modules est disponible à cette adresse: 
+      \url{https://www.youtube.com/watch?v=pdkxnDZRJLM}
+      
+      Je n'avais pas la connaissance et les aptitudes nécessaires pour
+      critiquer l'implémentation de cette interface...
+      
+     
+      
+      \begin{figure}[h!]
+     	\centering
+     	\caption{Quelques exemples des possibilités de cette bibliothèque:}
+    	%\includegraphics[width=\textwidth]{NetBeansPossibilityNormal}
+    \end{figure}
+     
+      
+      
+      
+      \begin{figure}[h!]
+     	\centering
+     	\caption{Lorsque la souris passe au dessus du nœud:}
+    	%\includegraphics[width=\textwidth]{NetBeansPossibilityHover}
+    \end{figure}
+
+      
+      \begin{figure}[h!]
+     	\centering
+     	\caption{Lorsque un nœud est sélectionné:}
+    	%\includegraphics[width=\textwidth]{NetBeansPossibilitySelect}
+    \end{figure}
+
+		
+		
+		\begin{figure}[h!]
+     	\centering
+     	\caption{La sélection multiple:}
+    	%\includegraphics[width=\textwidth]{NetBeansPossibilitySeveralSelect}
+    \end{figure}      
+\clearpage
+
+	\subsection{Conception visuelle}
+
+    Une fois que mon choix des différentes bibliothèques avait été fait, il ne
+    me restait plus qu'à me lancer. J'ai réalisé un prototype de l'interface
+    que j'ai soumis au regard critique d'Imen Megdiche. Mon but, ici, n'était pas de
+    donner un aperçu de l'interface finie, mais de donner un point de vue général
+    de l'interface et d'essayer de voir jusqu'où je pouvais aller. Je voulais aussi
+    explorer toutes les possibilités de l'interface.
+
+\begin{figure}[h!]
+     	\centering
+     	\caption{}
+    	%\includegraphics[width=0.85\textwidth]{InterfaceConception}
+    \end{figure}
+    \clearpage
+\pagebreak	
+
+		\subsubsection{Implémentation des fonctionnalités de cette interface}
+		
+  		Les actions que je propose 
+      (On retrouve ces actions dans la classe Action dans le gui-listenerInterface):
+  		\nopagebreak[4]
+      \begin{description}
+      \item [{OPEN}] ouverture d'un fichier GraphML
+
+      \item [{SAVE}]      sauvegarde dans le même fichier GraphML
+
+        \item [{EXPORT}]    exportation dans un autre fichier GraphML
+
+        \item [{SETTINGS}]  donnant accès à une fenêtre de réglages
+
+        \item [{EXIT}]    sortie de l'application
+
+        \item [{UNDO}]    annuler la dernière action sur le graphe
+
+        \item [{REDO}]    refaire la dernière action annuler sur le graphe
+
+        \item [{MERGE}]     fusionner les nœuds sélectionnés
+
+        \item [{ADDNODE}]     ajouter un nœud
+
+        \item [{ADDEDGE}]     ajouter un lien entre 2 nœuds
+
+        \item [{DELETENODE}]  supprimer un nœud
+
+        \item [{DELETEEDGE}]  supprimer un lien
+
+        \item [{EDITCOLOR}] éditer la couleur (mode noir blanc)
+
+        \item [{EDITMODE}]  éditer les noms des nœuds 
+
+        \item [{SHOWEDGE}]  montre le nom des nœud
+
+        \item [{SHOWEDGEHOVE}] seulement sur le passage de la souris 
+
+        \item [{NOTSHOWEDGE}]   ne jamais montrer le nom des nœuds
+
+        \item [{LINE}]    les liens sont représentés en tant que ligne
+
+        \item [{QUADCURVE}] les liens sont représentés en tant que ligne en "s"
+
+        \item [{CUDICCURVE}]  les liens sont représentés en courbe
+        
+        \item [{BENTLINE}]    les liens sont représentés en coude
+
+        \item [{VISIBLETOOLBAR}] rend la bar d'outils visible
+        
+        \item [{NOTVISIBLETOOLBAR}] rend la barre d'outils non visible
+        
+        \item [{HELP}]      donnant accès à une aide sommaire
+        
+        \item [{TIPS}]      donne accès à une série d'astuces et de raccourcis
+        
+        \item [{ABOUT}]   montre les intervenants de l’interface et d'autres informations
+       \end{description}
+
+      J'ai essayé de séparer les différents modules de l'interface par priorités:
+      les fonctions d'ouverture de fichier, de visualisation, de modification du graphe
+      et d'enregistrement de fichier final étaient les options les plus importantes.
+      Tandis que les options possibles dans la fenêtre "Settings" les options de visualisations, les options d'aide l'étaient moins. Finalement la possibilité d'historique n'était pas
+      forcement primordiale mais apportait une bien plus grande facilité
+      d'utilisation.
+
+\subsection{Les différentes étapes de l'implémentation}
+  
+      C'est lors de l’implémentation que nous pouvons évaluer si nous avons fait les bons choix lors de la mise en place et si nous avions vu juste lors de la conception.
+
+  \subsubsection{Implémentation de l'interface graphique}
+
+    L’implémentation de cette partie a été plutôt rapide et agréable.
+    
+    \paragraph{Débogue}
+
+      A cette étape du développement, le débogage, était plutôt difficile à réaliser.
+      Les tests des différents modules d'un point de vue unitaire ne révélaient aucun bug.
+      Les bugs sont surtout apparus plus tard lorsque certaines configurations du graphe
+      que je n'avais pas rencontré précédemment sont survenus. J'ai aussi dû revenir sur 
+      certain choix d'options pour l'utilisateur, car c'est seulement en utilisant 
+      intensément  l'interface que je me suis rendu compte des défauts d’ergonomie et 
+      de "maniabilité" de celle-ci. 
+
+  \subsubsection{Fusionner la conception visuelle et la conception des graphes }
+
+    La fusion entre le prototype graphique, relié au framework Jung
+    et la partie de visualisation des graphes implémentés par la bibliothèque
+    graphique de Netbeans a été très difficile car je n'avais pas correctement
+    compris la notion de généricité\footnote{
+        La généricité, c'est la possibilité d'utiliser des objets
+        du type non déterminés à l'implémentation désigné souvent écrit par <T> 
+
+        Cours sur la généricité:
+
+        \url{http://fr.openclassrooms.com/informatique/cours/apprenez-a-programmer-en-java/la-genericite-en-java}
+        \url{http://www.u-picardie.fr/~furst/docs/Genericite.pdf}
+      }, notamment pour le contenu des graphes. Les deux bibliothèques n’utilisent pas
+    la même structure de graphes. En plus, je me suis confronté à un problème
+    d'utilisation Maven\footnote{
+        " Maven est un outil de gestion de projet qui comprend un modèle objet pour définir un projet, un ensemble de standards, un cycle de vie, et un système de gestion des dépendances. Il embarque aussi la logique nécessaire à l'exécution d'actions pour des phases bien définies de ce cycle de vie, par le biais de plugins. Lorsque vous utilisez Maven, vous décrivez votre projet selon un modèle objet de projet clair, Maven peut alors lui appliquer la logique transverse d'un ensemble de plugins (partagés ou spécifiques). "
+
+        Source: \url{http://maven-guide-fr.erwan-alliaume.com/maven-reference-fr/site/reference/introduction.html}
+
+      }, outil que je ne connaissais pas. De plus il y avait un problème de
+    type de graphes. Cette étape  a été difficile et je me suis demandé si j'avais
+    fait le bon choix de bibliothèque. Imen Megdiche m'est venu en aide et a résolu le
+    problème. 
+
+  \subsubsection{Implémentation des actions de modifications des graphes}
+
+    Le débogage des actions d'ajout de suppression des nœuds
+    et de leurs liens a pu rapidement être implémenter, j'en ai profité pour
+    mettre en place la possibilité de revenir en arrière. 
+
+    La partie qui était bien moins évidente était la mise à jour du panel
+    représentant des graphes. Lors du choix de la bibliothèque et du type de graphes
+    utilisés, j'avais considéré le fait que les 
+    DirectGraph devraient se mettre à jour sans nécessité d'appliquer quelques méthodes 
+    que ce soit (indiqué dans la documentation de la bibliothèque). Malheureusement, cela ne marchait pas avec mon programme. J'ai essayé
+    d'utiliser la méthode de synchronisation (sych.) mais cela n'a pas résolu mon problème.
+    Pour ne pas s'éterniser sur ce point, je détruit et recréé le JungScene (objet de visualisation du graphe) à chaque modification 
+    de la scène, ce qui fonctionne mais qui n'est certainement pas le plus efficace. 
+    Je travaillerais plus amplement sur le problème plus tard.  
+
+  \subsubsection{Importer les fichiers GraphML}
+
+    Imen a décidé d'une nomenclature pour représenter les graphes en fichier 
+    GraphML. Entre autre attribut un nœud à la clé: "id" qui désigne si le nœud
+    est de nature des données (numData) ou si cela représente une structure (structData).
+
+    Pour préserver de la mémoire, seuls les fichiers de structures sont chargés en 
+    mémoire. La sélection aurait pu se faire sur l'attribut "id" mais si plus tard les 
+    utilisateurs de l'interface voulaient représenter d'autres types de données, cela aurait posé un problème. On a donc
+    choisi un autre attribut ("Visualized") qui détermine le fait que le graphe soit représenté ou non. 
+
+    %A corriger de ici 5 sur 6
+    On a aussi créé la clé "DisplayedValue" pour indiquer le nom associé au nœud lors de la visualisation.
+    %Jusque la  
+
+    Certaines méthodes étant créées spécialement pour transformer les fichiers 
+    GraphML en graphes dans le framework Jung(GraphMLReader et GraphMLWriter), l'importation en était simplifliée.
+ 
+  \subsubsection{Réaliser la fonction de fusion}
+
+    La fonction de fusion est la fonction principale de cette interface. J'ai réalisé dans un premier temps l'algorithme sur papier pour m'assurer du résultat et pour ne pas être tenté par une expérimentation hasardeuse. L’implémentation a été plutôt rapide. C'est seulement lors de nombreux tests que j'ai repéré quelques bugs graphiques. J'ai implémenté la fusion de deux nœuds uniquement. Si nous souhaitons fusionner un grand nombre de nœuds, cela peut s’avérer long. En créant l'algorithme j'ai gardé en tête le fait que nous pourrions vouloir fusionner une multitude de nœuds. Le passage d'un nœud à plusieurs ne devrait pas poser de problèmes. 
+
+    %% IMEN: option de fichier 
+    %// TODO Option de similitude 
+
+    %Bonus:Correction de bugs reliés à l'utilisateur}
+
+  \subsubsection{Pousser l'application pour plus d'ergonomie et plus de possibilités }
+
+    Plusieurs points sont envisageables pour créer une interface plus agréable pour l'utilisateur. Un petit mode "Tutoriel" lors de la première utilisation pour guider l'utilisateur. Un choix de thèmes de couleurs pourrait être intéressant. 
+
+    Pouvoir généraliser le programme que j'ai créé pourrait être très utile, j'utilise un format particulier de GraphML que nous pourrions adapté à des besoins spécifiques. Si nous permetons à l'utilisateur de choisir les conditions de représentation des nœuds dans ce fichier GraphML, ce logiciel pourrait être utile à toutes les personnes qui souhaiteraient visualiser un fichier de GraphML représentant des graphes hiérarchisés. 
+
+  \subsubsection{Mise en ligne}
+
+    Pour la mise en ligne, je souhaite avoir un produit fini dont je peux être fier. Par manque de temps et ayant vu les possibilités de cette interface, je vais continuer à travailler sur celle-ci jusqu'à ce qu'elle me satisfasse. Je pense que lors de l’étape de finalisation d'une interface, nous nous confrontons à une multitude de détails et que l'apprentissage n'est pas le même. C'est lors de cette phase que nous rentrons plus en profondeur dans le projet. 
+    
+    Le projet sera accessible sur mon site personnelle:
+     \url{http://www.kebonsa.com}
+
+
+\section{Bilan}
+%A corriger 6 sur 6OK
+En général, j'ai trouvé que ce stage a été une très bonne expérience, je ne connaissais pas le domaine de l'intelligence 
+artificielle et sa découverte à été très intéressante. Le fait de travailler sur le long terme sur un projet est très 
+agréable, pouvoir se focaliser et rester sur la même thématique pendant huit semaines est passionnant. Lors de ces deux mois j'ai eu une certaine vision du monde du métier de chercheur,
+j'ai particulièrement aimé l'aspect d'autonomie, l'esprit d'équipe, et l’univers même de la recherche. Le fait d’être en permanence en contact avec les nouvelles découvertes est très 
+enrichissant. En changeant de lieux de travail, j'ai pu remarquer, l’intérêt de travailler au sein d'un 
+groupe. Même si les thématiques de travail sont très différentes,nous pouvons être confronté 
+à des problèmes similaires. Je l'ai ressenti dans l'avancement de mon travail.
+
+J'ai appris à m'organiser et prévoir mon temps de travail, à être
+indépendant. J'ai appris à chercher des informations précises sur les différentes bibliothèques tels que JUNG / Visual
+Library (de Netbeans). Par la même occasion j'ai découvert la rédaction d'un document grâce à \LaTeX{}. J'ai découvert l'utilisation d'un service de gestion de développement de logiciels avec Github.
+Écrire ce rapport m'a été très utile, j'avais sous-estimé le temps de rédaction.
+
+Grâce à ce projet j'ai beaucoup appris sur la création d'interface. 
+D’autant plus dans un domaine qui me plaît particulièrement des Open Data.
+
+J'ai découvert les différentes phases de conception d'une interface. J'ai particulièrement aimé la partie design. J'ai trouvé la conception en rapport avec le modèle MVC très instructive. Ce pattern design marche particulièrement bien pour %TUOTO
+les interfaces en Java Swing même si la mise en place des interfaces peut être surprenante.  %a mettre
+ La recherche que j'ai réalisé pour répondre au mieux à l'utilisabilité (user friendly) de l’interface a été passionnante. Je me suis rendu compte de tout ce qui peut être mis en place pour satisfaire au mieux l'utilisateur. J'ai aussi appris que lors de cette étape, seul le test de l'interface peut dévoiler les imperfections de l'interface. Ce projet confirme mes attentes vis 
+à vis de l'IHM. J'envisage de poursuivre mes études dans cette voie. 
+%jusqu'ici
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  EndNotes
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\cleardoublepage{}
+
+\newpage
+\begingroup
+\parindent 0pt
+\parskip 2ex
+\def\enotesize{\normalsize}
+\addcontentsline{toc}{part}{Notes}
+\theendnotes
+\endgroup
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Annexes
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\cleardoublepage{}
+
+\appendix
+
+\part*{Annexes}
+
+\part*{\addcontentsline{toc}{part}{Annexes}\global\long\def\thesection{\arabic{section}}}
+
+\section{Références de l'introduction}
+
+  Apprendre github en 15 minutes (les bases de github):
+
+  \url{https://try.github.io/levels/1/challenges/3}
+
+  Java swing à une mauvaise réputation:
+
+  \url{http://java.dzone.com/articles/10-things-i-never-want-do}
+
+%\ref{sec_implication}\label{part_Open_Data}
+\section{Références de la partie \ref{part_Open_Data}: l'intégration multidimensionnelle d'Open
+Data}
+
+\section{Références de la partie \ref{part_Conception}: Conception de l'interface}
+
+  Les règles d'une bonne interface:
+
+  \url{https://www.cs.umd.edu/users/ben/goldenrules.html}
+
+  Les conseils de programmation propre:
+
+  \url{http://hoskinator.blogspot.fr/2006/06/10-tips-on-writing-reusable-code.html}
+
+
+\section{Références de la partie \ref{part_Realisation}: Réalisation de l'interface}
+
+
+  \subsection{Le langage \LaTeX{}}
+
+    Site de question réponse:
+
+    \url{http://tex.stackexchange.com/}
+
+    Éditeur \LaTeX{} en ligne:
+
+    \url{https://www.sharelatex.com/}
+
+    Cours de \LaTeX{}
+
+    \url{http://www.sharelatex.com/learn/Main\_Page}
+
+    Tutoriel \LaTeX{}:
+
+    \url{http://fr.openclassrooms.com/informatique/cours/redigez-des-documents-de-qualite-avec-latex/installer-latex}
+
+    Meilleur \LaTeX{} éditeur:
+
+    \url{http://tex.stackexchange.com/questions/339/latex-editors-ides}
+
+    Les notes des fins de partie:
+
+    \url{http://get-software.net/macros/latex/contrib/endnotes/endnotes.pdf}
+
+
+  \subsection{L'interface en swing}
+
+    Utilisation des JDialog (fermeture avec la touche esc):
+
+    \url{http://www.coderanch.com/t/335357/GUI/java/KeyPressed-JDialog}
+
+    Documentation officielle sur la classe KeyStroke:
+
+    \url{http://docs.oracle.com/javase/7/docs/api/javax/swing/KeyStroke.html}
+
+    Documentation officielle sur la classe Action:
+
+    \url{http://docs.oracle.com/javase/6/docs/api/javax/swing/Action.html}
+
+    Tutoriels sur le Keybinding:
+
+    \url{http://docs.oracle.com/javase/tutorial/uiswing/misc/keybinding.html\#actionmap}
+
+    Sublime texte 2 (logiciel de traitement de texte) avec \LaTeX{}
+
+    \url{http://www.practicallyefficient.com/home/2012/11/29/working-with-latex-in-sublime-text-2}
+
+  \section{La bibliothèque Visual de Netbeans:}
+
+    \url{https://platform.netbeans.org/tutorials/nbm-visual_library.html}
+
+  \subsection{Comparatif de bibliothèques de graphes en Java:}
+
+    Discutions sur les qualités et défauts des différentes bibliothèques:
+
+    \url{http://stackoverflow.com/questions/51574/good-java-graph-algorithm-library}
+
+
+  \subsection{L'architecture MVC}
+
+    L'architecture MVC avec java swing:
+
+    \url{http://www.javaworld.com/article/2076632/core-java/mvc-meets-swing.html}
+
+    Conseil de base sur la structure MVC:
+    
+    \url{http://fr.openclassrooms.com/informatique/cours/apprenez-a-programmer-en-java/mieux-structurer-son-code-le-pattern-mvc}
+
+
+%Bonus \section{Documentations de l'interface (en anglais)}
+\section{Mise en ligne de l'interface sur www.kebonsa.com}
+
+  Code prochainement disponible sur:
+
+  \url{https://github.com/wladdm/graphViewer}
+
+  et sur mon site:
+
+  \url{http://www.kebonsa.com}
+
+\end{document}
+
+\section{Joindre l'auteur}
+
+	Si vous avez des questions supplémentaire n'hésiter pas a me contacter par mail: 
+	Wladimir du Manoir 
+	
+	\href{mailto:wladmdj@gmail.com}{wladmdj@gmail.com}
